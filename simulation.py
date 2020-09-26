@@ -8,6 +8,7 @@
 import csv
 import urllib
 import argparse
+import os
 
 
 # In[3]:
@@ -88,7 +89,7 @@ class Request(object):
         return current_time - self.timestamp
 
 
-# In[6]:
+# In[5]:
 
 
 def simulateOneServer(datafile):
@@ -105,7 +106,7 @@ def simulateOneServer(datafile):
     readfile = csv.reader(datafile)
     lab_server = Server()
     server_queue = Queue()
-    waiting_times = []
+    wait_time = []
 
     for line in readfile:
         req_sec = int(line[0])
@@ -115,13 +116,13 @@ def simulateOneServer(datafile):
 
         if (not lab_server.busy()) and (not server_queue.is_empty()):
             next_task = server_queue.dequeue()
-            waiting_times.append(next_task.wait_time(req_sec))
+            wait_time.append(next_task.wait_time(req_sec))
             lab_server.start_next(next_task)
 
         lab_server.tick()
 
-    average_wait = sum(waiting_times) / len(waiting_times)
-    print('Average Wait %6.2f secs %3d tasks remaining.'
+    average_wait = sum(wait_time) / len(wait_time)
+    print('Average Wait %6 secs %3 tasks remaining.'
           % (average_wait, server_queue.size()))
 
 
@@ -149,7 +150,7 @@ def simulateManyServers(request_file, servers):
             server_room[server_num](int(data[0]), int(data[2]))
 
 
-# In[15]:
+# In[4]:
 
 
 def main():
@@ -163,7 +164,7 @@ def main():
     try:
         datafile = downloadData(args.url)
     except urllib.URLError:
-        print ("Please enter a valid URL.")
+        print ("Error. Please enter a valid URL.")
         raise
     else:
         if not args.servers == 1:
